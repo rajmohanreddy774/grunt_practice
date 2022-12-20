@@ -1,3 +1,5 @@
+const webpackConfig = require("./webpack.config");
+
 module.exports = function (grunt) {
   grunt.initConfig({
     jshint: {
@@ -9,11 +11,11 @@ module.exports = function (grunt) {
       },
     },
     watch: {
-      files: ['src/*.html','src/*.css', 'src/*.js'],
-      tasks: ["htmlmin", 'cssmin', 'uglify'],
-      options:{
-        livereload:true
-      }
+      files: ["src/*.html", "src/*.css", "src/*.js"],
+      tasks: ["htmlmin", "cssmin", "uglify"],
+      options: {
+        livereload: true,
+      },
     },
     uglify: {
       options: {
@@ -39,9 +41,9 @@ module.exports = function (grunt) {
       },
     },
     htmlmin: {
-        options:{
-            collapseWhitespace:true
-        },
+      options: {
+        collapseWhitespace: true,
+      },
       target: {
         files: [
           {
@@ -51,19 +53,26 @@ module.exports = function (grunt) {
         ],
       },
     },
-     connect:{
-        server:{
-            options:{
-                port:8000,
-                base:{
-                    path:'build/',
-                    options:{
-                        index:'index.html'
-                    }
-                }
-            }
-        }
-     }
+    connect: {
+      server: {
+        options: {
+          port: 8000,
+          base: {
+            path: "build/",
+            options: {
+              index: "index.html",
+            },
+          },
+        },
+      },
+    },
+    webpack: {
+      options: {
+        stats: !process.env.NODE_ENV || process.env.NODE_ENV === "development",
+      },
+      prod: webpackConfig,
+      dev: Object.assign({ watch: true }, webpackConfig),
+    },
   });
 
   grunt.loadNpmTasks("grunt-contrib-jshint");
@@ -72,13 +81,14 @@ module.exports = function (grunt) {
   grunt.registerTask("default", ["jshint"]);
   grunt.loadNpmTasks("grunt-contrib-uglify");
   grunt.registerTask("compressJS", "uglify");
-  grunt.registerTask('default',['connect','watch']);
+  grunt.registerTask("default", ["connect", "watch"]);
   grunt.loadNpmTasks("grunt-contrib-cssmin");
   grunt.loadNpmTasks("grunt-contrib-htmlmin");
-  grunt.registerTask('compress',['uglify', 'cssmin', 'htmlmin'])
-  grunt.loadNpmTasks('grunt-contrib-connect');
-  grunt.registerTask('myTask', 'my basic task', function(a,b){
-    grunt.log.writeln(a,b);
-    grunt.task.run('htmlmin');
-  })
+  grunt.registerTask("compress", ["uglify", "cssmin", "htmlmin"]);
+  grunt.loadNpmTasks("grunt-contrib-connect");
+  grunt.registerTask("myTask", "my basic task", function (a, b) {
+    grunt.log.writeln(a, b);
+    grunt.task.run("htmlmin");
+    grunt.loadNpmTasks("grunt-webpack");
+  });
 };
